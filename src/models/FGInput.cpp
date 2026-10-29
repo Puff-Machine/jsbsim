@@ -40,7 +40,9 @@ INCLUDES
 
 #include "FGInput.h"
 #include "FGFDMExec.h"
+#if !defined(__wasi__)
 #include "input_output/FGUDPInputSocket.h"
+#endif
 #include "input_output/FGXMLFileRead.h"
 #include "input_output/FGModelLoader.h"
 #include "input_output/FGLog.h"
@@ -100,9 +102,19 @@ bool FGInput::Load(Element* el)
   type = to_upper(type);
 
   if (type.empty() || type == "SOCKET") {
+#if !defined(__wasi__)
     Input = new FGInputSocket(FDMExec, enabled);
+#else
+    FGXMLLogging log(element, LogLevel::ERROR);
+    log << "Socket input is not supported on this WASI build" << endl;
+#endif
   } else if (type == "QTJSBSIM") {
+#if !defined(__wasi__)
     Input = new FGUDPInputSocket(FDMExec, enabled);
+#else
+    FGXMLLogging log(element, LogLevel::ERROR);
+    log << "UDP input is not supported on this WASI build" << endl;
+#endif
   } else if (type != string("NONE")) {
     FGXMLLogging log(element, LogLevel::ERROR);
     log << "Unknown type of input specified in config file" << endl;

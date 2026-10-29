@@ -41,7 +41,9 @@ INCLUDES
 
 #include "FGOutput.h"
 #include "input_output/FGOutputTextFile.h"
+#if !defined(__wasi__)
 #include "input_output/FGOutputFG.h"
+#endif
 #include "input_output/FGXMLFileRead.h"
 #include "input_output/FGModelLoader.h"
 #include "input_output/FGLog.h"
@@ -211,12 +213,18 @@ bool FGOutput::Load(int subSystems, std::string protocol, std::string type,
     FGOutputTextFile* OutputTextFile = new FGOutputTextFile(FDMExec);
     OutputTextFile->SetDelimiter("\t");
     Output = OutputTextFile;
+#if !defined(__wasi__)
   } else if (type == "SOCKET") {
     Output = new FGOutputSocket(FDMExec);
     name += ":" + port + "/" + protocol;
   } else if (type == "FLIGHTGEAR") {
     Output = new FGOutputFG(FDMExec);
     name += ":" + port + "/" + protocol;
+#else
+  } else if (type == "SOCKET" || type == "FLIGHTGEAR") {
+    FGLogging log(LogLevel::ERROR);
+    log << "Socket output is not supported on this WASI build\n";
+#endif
   } else if (type == "TERMINAL") {
     // Not done yet
   } else if (type != string("NONE")) {
@@ -264,10 +272,16 @@ bool FGOutput::Load(Element* document, const SGPath& dir)
     Output = new FGOutputTextFile(FDMExec);
   } else if (type == "TABULAR") {
     Output = new FGOutputTextFile(FDMExec);
+#if !defined(__wasi__)
   } else if (type == "SOCKET") {
     Output = new FGOutputSocket(FDMExec);
   } else if (type == "FLIGHTGEAR") {
     Output = new FGOutputFG(FDMExec);
+#else
+  } else if (type == "SOCKET" || type == "FLIGHTGEAR") {
+    FGLogging log(LogLevel::ERROR);
+    log << "Socket output is not supported on this WASI build\n";
+#endif
   } else if (type == "TERMINAL") {
     // Not done yet
   } else if (type != string("NONE")) {

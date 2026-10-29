@@ -68,7 +68,7 @@
         </sensor>
 
 
-        <sensor name="temp_C">
+        <sensor name="baro_temp_C">
 
             <input>sensor/baro/temp_true_C</input>
 

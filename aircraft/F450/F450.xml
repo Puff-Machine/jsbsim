@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<fdm_config name="F450" release="ALPHA" version="3.0">
+<fdm_config name="F450" release="ALPHA" version="2.0">
     <fileheader/>
 
     <metrics file="Metrics.xml"/>

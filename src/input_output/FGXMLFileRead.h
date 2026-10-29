@@ -38,6 +38,8 @@ INCLUDES
 #include "FGXMLParse.h"
 #include "simgear/misc/sg_path.hxx"
 
+#include <string>
+
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -46,8 +48,12 @@ namespace JSBSim {
 
 class JSBSIM_API FGXMLFileRead {
 public:
+  using EmbeddedFileReader = bool (*)(const char* path, std::string* content);
+
   FGXMLFileRead(void) {}
   ~FGXMLFileRead(void) {}
+
+  static void SetEmbeddedFileReader(EmbeddedFileReader reader);
 
   Element* LoadXMLDocument(const SGPath& XML_filename, bool verbose=true)
   {

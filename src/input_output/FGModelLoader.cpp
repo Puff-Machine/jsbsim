@@ -60,8 +60,12 @@ Element_ptr FGModelLoader::Open(Element *el)
     FGXMLFileRead XMLFileRead;
     SGPath path(SGPath::fromUtf8(fname.c_str()));
 
-    if (path.isRelative())
-      path = model->FindFullPathName(path);
+    if (path.isRelative()) {
+      SGPath resolved = model->FindFullPathName(path);
+      if (!resolved.isNull()) {
+        path = resolved;
+      }
+    }
 
     if (CachedFiles.find(path.utf8Str()) != CachedFiles.end())
       document = CachedFiles[path.utf8Str()];

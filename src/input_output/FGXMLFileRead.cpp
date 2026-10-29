@@ -32,20 +32,43 @@ INCLUDES
 #include "input_output/FGLog.h"
 #include "simgear/io/iostreams/sgstream.hxx"
 
+#include <sstream>
+
 namespace JSBSim {
+
+namespace {
+FGXMLFileRead::EmbeddedFileReader g_embedded_file_reader = nullptr;
+}
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+void FGXMLFileRead::SetEmbeddedFileReader(EmbeddedFileReader reader)
+{
+  g_embedded_file_reader = reader;
+}
 
 Element* FGXMLFileRead::LoadXMLDocument(const SGPath& XML_filename,
                                         FGXMLParse& fparse, bool verbose)
 {
   sg_ifstream infile;
   SGPath filename(XML_filename);
+
+  if (!filename.isNull() && filename.extension().empty()) {
+    filename.concat(".xml");
+  }
+
+  if (g_embedded_file_reader && !filename.isNull()) {
+    std::string content;
+    if (g_embedded_file_reader(filename.utf8Str().c_str(), &content)) {
+      std::istringstream input(content);
+      readXML(input, fparse, filename.utf8Str());
+      return fparse.GetDocument();
+    }
+  }
+
   if (!filename.isNull()) {
-    if (filename.extension().empty())
-      filename.concat(".xml");
     infile.open(filename);
     if ( !infile.is_open()) {
       if (verbose) {

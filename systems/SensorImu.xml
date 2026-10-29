@@ -158,7 +158,7 @@
 
 
     <channel name="Temperature Error Model">
-        <sensor name="temp_C">
+        <sensor name="imu_temp_C">
 
             <input>sensor/imu/temp_true_C</input>
 
@@ -182,7 +182,7 @@
 
     <channel name="Accelerometer Error Model">
 
-        <sensor name="AccelX">
+        <sensor name="imu_AccelX">
 
             <input>sensor/imu/accelX_true_mps2</input>
 
@@ -202,7 +202,7 @@
 
         </sensor>
 
-        <sensor name="AccelY">
+        <sensor name="imu_AccelY">
 
             <input>sensor/imu/accelY_true_mps2</input>
 
@@ -222,7 +222,7 @@
 
         </sensor>
 
-        <sensor name="AccelZ">
+        <sensor name="imu_AccelZ">
 
             <input>sensor/imu/accelZ_true_mps2</input>
 

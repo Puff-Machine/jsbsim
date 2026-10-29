@@ -3,18 +3,13 @@ set(SOURCES FGGroundCallback.cpp
             FGScript.cpp
             FGXMLElement.cpp
             FGXMLParse.cpp
-            FGfdmSocket.cpp
             FGXMLFileRead.cpp
             FGOutputType.cpp
-            FGOutputFG.cpp
-            FGOutputSocket.cpp
             FGOutputFile.cpp
             FGOutputTextFile.cpp
             FGPropertyReader.cpp
             FGModelLoader.cpp
             FGInputType.cpp
-            FGInputSocket.cpp
-            FGUDPInputSocket.cpp
             string_utilities.cpp
             FGLog.cpp)
 
@@ -23,21 +18,30 @@ set(HEADERS FGGroundCallback.h
             FGScript.h
             FGXMLElement.h
             FGXMLParse.h
-            FGfdmSocket.h
             FGXMLFileRead.h
             net_fdm.hxx
             string_utilities.h
             FGOutputType.h
-            FGOutputFG.h
-            FGOutputSocket.h
             FGOutputFile.h
             FGOutputTextFile.h
             FGPropertyReader.h
             FGModelLoader.h
             FGInputType.h
-            FGInputSocket.h
-            FGUDPInputSocket.h
             FGLog.h)
+
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "WASI")
+    list(APPEND SOURCES FGfdmSocket.cpp
+                                            FGOutputFG.cpp
+                                            FGOutputSocket.cpp
+                                            FGInputSocket.cpp
+                                            FGUDPInputSocket.cpp)
+
+    list(APPEND HEADERS FGfdmSocket.h
+                                            FGOutputFG.h
+                                            FGOutputSocket.h
+                                            FGInputSocket.h
+                                            FGUDPInputSocket.h)
+endif()
 
 add_library(InputOutput OBJECT ${SOURCES})
 # For MinGW, we need to force _WIN32_WINNT to a quite recent value for FGfdmSocket

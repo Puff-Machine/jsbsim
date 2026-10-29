@@ -39,6 +39,8 @@
 #include "input_output/FGXMLElement.h"
 #include "input_output/string_utilities.h"
 
+#include <regex>
+
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   FORWARD DECLARATIONS
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -77,12 +79,22 @@ public:
 
   FGParameterValue(const std::string& value, std::shared_ptr<FGPropertyManager> pm,
                    Element* el) {
+#if defined(JSBSIM_NOEXCEPT_WASI)
+    static const std::regex number_format(
+        R"(^\s*[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?\s*$)");
+    if (std::regex_match(value, number_format)) {
+      param = new FGRealValue(atof_locale_c(value.c_str()));
+    } else {
+      param = new FGPropertyValue(value, pm, el);
+    }
+#else
     try {
       param = new FGRealValue(atof_locale_c(value.c_str()));
     } catch (InvalidNumber&) {
       // "value" must be a property if execution passes to here.
       param = new FGPropertyValue(value, pm, el);
     }
+#endif
   }
 
   double GetValue(void) const override { return param->GetValue(); }
